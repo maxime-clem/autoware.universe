@@ -254,7 +254,7 @@ def launch_setup(context, *args, **kwargs):
             vehicle_info_param,
             sampler_node_param,
         ],
-        # prefix=["konsole -e gdb -ex run --args"],  # for debugging
+        prefix=["konsole -e gdb -ex run --args"],  # for debugging
         # prefix=['valgrind --tool=callgrind'],  # for profiling
         # prefix=['valgrind --leak-check=full \
         #  --show-leak-kinds=all \

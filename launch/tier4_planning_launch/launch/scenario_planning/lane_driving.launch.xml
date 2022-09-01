@@ -37,7 +37,7 @@
     <!-- motion planning module -->
     <group>
       <push-ros-namespace namespace="motion_planning"/>
-      <include file="$(find-pkg-share tier4_planning_launch)/launch/scenario_planning/lane_driving/motion_planning/motion_planning.launch.py">
+      <include file="$(find-pkg-share tier4_planning_launch)/launch/scenario_planning/lane_driving/motion_planning/sampling_based_motion_planning.launch.py">
         <arg name="vehicle_info_param_file" value="$(var vehicle_info_param_file)"/>
         <arg name="tier4_planning_launch_param_path" value="$(var tier4_planning_launch_param_path)"/>
         <arg name="use_multithread" value="true"/>
