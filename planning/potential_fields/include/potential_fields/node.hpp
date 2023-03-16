@@ -19,6 +19,7 @@
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
+#include <autoware_auto_planning_msgs/msg/path.hpp>
 #include <grid_map_msgs/msg/grid_map.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 
@@ -34,16 +35,18 @@ public:
   explicit PotentialFieldsNode(const rclcpp::NodeOptions & node_options);
 
 private:
+  void onPath(const autoware_auto_planning_msgs::msg::Path::ConstSharedPtr msg);
   void onDynamicObjects(
     const autoware_auto_perception_msgs::msg::PredictedObjects::ConstSharedPtr msg);
-
   void onOdometry(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
 
   // cached data
   vehicle_info_util::VehicleInfo vehicle_info_;
+  autoware_auto_planning_msgs::msg::Path::ConstSharedPtr path_ptr_;
   autoware_auto_perception_msgs::msg::PredictedObjects::ConstSharedPtr objects_ptr_;
   nav_msgs::msg::Odometry::ConstSharedPtr odometry_ptr_;
   // publisher and subscriber
+  rclcpp::Subscription<autoware_auto_planning_msgs::msg::Path>::SharedPtr sub_path_;
   rclcpp::Subscription<autoware_auto_perception_msgs::msg::PredictedObjects>::SharedPtr
     sub_dynamic_objects_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odometry_;
