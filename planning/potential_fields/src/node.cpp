@@ -14,6 +14,7 @@
 
 #include "potential_fields/node.hpp"
 
+#include "potential_fields/apf_curve_road.hpp"
 #include "potential_fields/potential_fields.hpp"
 
 namespace potential_fields
