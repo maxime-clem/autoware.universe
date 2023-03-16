@@ -41,7 +41,7 @@ struct Info
   double a_lat;
   double a_lon;
   double yaw;
-  double m;
+  double mass;
   double length;
   double width;
 };
@@ -56,32 +56,29 @@ inline int sign(const double x)
     return -1;
 }
 
-inline double getRoadPF(const Info & ego_info)
+inline double getRoadPF(const Info & info)
 {
   // right lane
-  const double m_y = -1 / (2 * c2 * (ego_info.x + delta_Xh) + c1);
-  const double Y_rlc_cr =
-    c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_rlc;
-  const double b_y = Y_rlc_cr - m_y * (ego_info.x + delta_Xh);
-  const double U_rl_cr =
-    A_r * std::pow(
-            1 - std::exp(
-                  -b_r * sign(ego_info.y - Y_rlc_cr) *
-                  std::sqrt(
-                    std::pow((ego_info.y - b_y) / m_y - (ego_info.x + delta_Xh), 2) +
-                    std::pow(Y_rlc_cr - ego_info.y, 2))),
-            2);
+  const double m_y = -1 / (2 * c2 * (info.x + delta_Xh) + c1);
+  const double Y_rlc_cr = c2 * std::pow(info.x + delta_Xh, 2) + c1 * (info.x + delta_Xh) + c0_rlc;
+  const double b_y = Y_rlc_cr - m_y * (info.x + delta_Xh);
+  const double U_rl_cr = A_r * std::pow(
+                                 1 - std::exp(
+                                       -b_r * sign(info.y - Y_rlc_cr) *
+                                       std::sqrt(
+                                         std::pow((info.y - b_y) / m_y - (info.x + delta_Xh), 2) +
+                                         std::pow(Y_rlc_cr - info.y, 2))),
+                                 2);
   // left lane
-  const double Y_llc_cr =
-    c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_llc;
-  const double b_y_ll = Y_llc_cr - m_y * (ego_info.x + delta_Xh);
+  const double Y_llc_cr = c2 * std::pow(info.x + delta_Xh, 2) + c1 * (info.x + delta_Xh) + c0_llc;
+  const double b_y_ll = Y_llc_cr - m_y * (info.x + delta_Xh);
   const double U_ll_cr =
     A_r * std::pow(
             1 - std::exp(
-                  b_r * sign(ego_info.y - Y_llc_cr) *
+                  b_r * sign(info.y - Y_llc_cr) *
                   std::sqrt(
-                    std::pow((ego_info.y - b_y_ll) / m_y - (ego_info.x + delta_Xh), 2) +
-                    std::pow(Y_llc_cr - ego_info.y, 2))),
+                    std::pow((info.y - b_y_ll) / m_y - (info.x + delta_Xh), 2) +
+                    std::pow(Y_llc_cr - info.y, 2))),
             2);
   // total
   const double U_cr = U_rl_cr + U_ll_cr;
@@ -94,7 +91,8 @@ inline double getObsPF(const Info & ego_info, const Info & obs_info)
   // basic parameter setting
   constexpr double F_m = 300.0;  // brake force of each tire
   const double x_sigma =
-    (ego_info.m * (ego_info.v_lon * ego_info.v_lon - obs_info.v_lon * obs_info.v_lon)) / (8 * F_m) +
+    (ego_info.mass * (ego_info.v_lon * ego_info.v_lon - obs_info.v_lon * obs_info.v_lon)) /
+      (8 * F_m) +
     (ego_info.length + obs_info.length) / 2;
 
   // obstacle PF
