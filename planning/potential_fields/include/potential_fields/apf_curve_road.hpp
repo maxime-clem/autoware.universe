@@ -46,7 +46,7 @@ struct Info
   double width;
 };
 
-int sign(const double x)
+inline int sign(const double x)
 {
   if (x > 0)
     return 1;
@@ -56,23 +56,26 @@ int sign(const double x)
     return -1;
 }
 
-double getRoadPF(const Info & ego_info)
+inline double getRoadPF(const Info & ego_info)
 {
   // right lane
-  double m_y = -1 / (2 * c2 * (ego_info.x + delta_Xh) + c1);
-  double Y_rlc_cr = c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_rlc;
-  double b_y = Y_rlc_cr - m_y * (ego_info.x + delta_Xh);
-  double U_rl_cr = A_r * std::pow(
-                           1 - std::exp(
-                                 -b_r * sign(ego_info.y - Y_rlc_cr) *
-                                 std::sqrt(
-                                   std::pow((ego_info.y - b_y) / m_y - (ego_info.x + delta_Xh), 2) +
-                                   std::pow(Y_rlc_cr - ego_info.y, 2))),
-                           2);
+  const double m_y = -1 / (2 * c2 * (ego_info.x + delta_Xh) + c1);
+  const double Y_rlc_cr =
+    c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_rlc;
+  const double b_y = Y_rlc_cr - m_y * (ego_info.x + delta_Xh);
+  const double U_rl_cr =
+    A_r * std::pow(
+            1 - std::exp(
+                  -b_r * sign(ego_info.y - Y_rlc_cr) *
+                  std::sqrt(
+                    std::pow((ego_info.y - b_y) / m_y - (ego_info.x + delta_Xh), 2) +
+                    std::pow(Y_rlc_cr - ego_info.y, 2))),
+            2);
   // left lane
-  double Y_llc_cr = c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_llc;
-  double b_y_ll = Y_llc_cr - m_y * (ego_info.x + delta_Xh);
-  double U_ll_cr =
+  const double Y_llc_cr =
+    c2 * std::pow(ego_info.x + delta_Xh, 2) + c1 * (ego_info.x + delta_Xh) + c0_llc;
+  const double b_y_ll = Y_llc_cr - m_y * (ego_info.x + delta_Xh);
+  const double U_ll_cr =
     A_r * std::pow(
             1 - std::exp(
                   b_r * sign(ego_info.y - Y_llc_cr) *
@@ -81,38 +84,38 @@ double getRoadPF(const Info & ego_info)
                     std::pow(Y_llc_cr - ego_info.y, 2))),
             2);
   // total
-  double U_cr = U_rl_cr + U_ll_cr;
+  const double U_cr = U_rl_cr + U_ll_cr;
 
   return U_cr;
 }
 
-double getObsPF(const Info & ego_info, const Info & obs_info)
+inline double getObsPF(const Info & ego_info, const Info & obs_info)
 {
   // basic parameter setting
   constexpr double F_m = 300.0;  // brake force of each tire
-  double x_sigma =
+  const double x_sigma =
     (ego_info.m * (ego_info.v_lon * ego_info.v_lon - obs_info.v_lon * obs_info.v_lon)) / (8 * F_m) +
     (ego_info.length + obs_info.length) / 2;
 
   // obstacle PF
-  double sigma_x = std::sqrt(-pow(x_sigma, 2) / (2 * log(0.01 / A_o)));
-  double psi_obs_tem = std::atan(
+  const double sigma_x = std::sqrt(-pow(x_sigma, 2) / (2 * log(0.01 / A_o)));
+  const double psi_obs_tem = std::atan(
     2 * c2 * obs_info.x + c1);  // estimated value if ego can't get the obstacle's yaw info
-  double a_psi = std::pow(std::cos(psi_obs_tem), 2) / (2 * sigma_x * sigma_x) +
-                 std::pow(std::sin(psi_obs_tem), 2) / (2 * sigma_y * sigma_y);
-  double b_psi =
+  const double a_psi = std::pow(std::cos(psi_obs_tem), 2) / (2 * sigma_x * sigma_x) +
+                       std::pow(std::sin(psi_obs_tem), 2) / (2 * sigma_y * sigma_y);
+  const double b_psi =
     -(std::sin(2 * psi_obs_tem) / (4 * sigma_x * sigma_x) +
       std::sin(2 * psi_obs_tem) / (4 * sigma_y * sigma_y));
-  double c_psi = std::pow(std::sin(psi_obs_tem), 2) / (2 * std::pow(sigma_x, 2)) +
-                 std::pow(std::cos(psi_obs_tem), 2) / (2 * std::pow(sigma_y, 2));
-  double U_obs = A_o * std::exp(
-                         -(a_psi * std::pow(ego_info.x - obs_info.x, 2) +
-                           2 * b_psi * (ego_info.x - obs_info.x) * (ego_info.y - obs_info.y) +
-                           c_psi * std::pow(ego_info.y - obs_info.y, 2)));
+  const double c_psi = std::pow(std::sin(psi_obs_tem), 2) / (2 * std::pow(sigma_x, 2)) +
+                       std::pow(std::cos(psi_obs_tem), 2) / (2 * std::pow(sigma_y, 2));
+  const double U_obs = A_o * std::exp(
+                               -(a_psi * std::pow(ego_info.x - obs_info.x, 2) +
+                                 2 * b_psi * (ego_info.x - obs_info.x) * (ego_info.y - obs_info.y) +
+                                 c_psi * std::pow(ego_info.y - obs_info.y, 2)));
   return U_obs;
 }
 
-std::vector<double> Fren2Cart(
+inline std::vector<double> Fren2Cart(
   double s, double s_dot, double s_dot2, double l, double l_dot, double l_dot2, double ref_path[])
 {
   // extract reference info
