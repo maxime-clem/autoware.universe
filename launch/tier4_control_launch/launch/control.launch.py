@@ -341,6 +341,7 @@ def launch_setup(context, *args, **kwargs):
             operation_mode_transition_manager_component,
             glog_component,
         ],
+        prefix="konsole -e gdb -ex run --args",
     )
 
     # control validator checker
