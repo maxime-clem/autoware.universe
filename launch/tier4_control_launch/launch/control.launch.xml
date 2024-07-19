@@ -43,7 +43,7 @@
         <composable_node pkg="autoware_trajectory_follower_node" plugin="autoware::motion::control::trajectory_follower_node::Controller" name="controller_node_exe" namespace="trajectory_follower">
           <remap from="~/input/reference_trajectory" to="/planning/scenario_planning/trajectory"/>
           <remap from="~/input/current_odometry" to="/localization/kinematic_state"/>
-          <remap from="~/input/current_steering" to="/vehicle/status/steering_status"/>
+          <remap from="~/input/current_steering" to="/vehicle/status/steering_status/new"/>
           <remap from="~/input/current_accel" to="/localization/acceleration"/>
           <remap from="~/input/current_operation_mode" to="/system/operation_mode/state"/>
           <remap from="~/output/predicted_trajectory" to="lateral/predicted_trajectory"/>
@@ -51,7 +51,7 @@
           <remap from="~/output/slope_angle" to="longitudinal/slope_angle"/>
           <remap from="~/output/longitudinal_diagnostic" to="longitudinal/diagnostic"/>
           <remap from="~/output/stop_reason" to="longitudinal/stop_reason"/>
-          <remap from="~/output/control_cmd" to="control_cmd"/>
+          <remap from="~/output/control_cmd" to="/control/command/control_cmd/new"/>
           <param name="lateral_controller_mode" value="$(var lateral_controller_mode)"/>
           <param name="longitudinal_controller_mode" value="$(var longitudinal_controller_mode)"/>
           <param from="$(var nearest_search_param_path)"/>
@@ -79,22 +79,22 @@
 
         <!-- shift decider -->
         <composable_node pkg="autoware_shift_decider" plugin="autoware::shift_decider::ShiftDecider" name="autoware_shift_decider">
-          <remap from="input/control_cmd" to="/control/trajectory_follower/control_cmd"/>
+          <remap from="input/control_cmd" to="/control/trajectory_follower/control_cmd/new"/>
           <remap from="input/state" to="/autoware/state"/>
           <remap from="input/current_gear" to="/vehicle/status/gear_status"/>
-          <remap from="output/gear_cmd" to="/control/shift_decider/gear_cmd"/>
+          <remap from="output/gear_cmd" to="/control/shift_decider/gear_cmd/new"/>
           <param from="$(var shift_decider_param_path)"/>
           <extra_arg name="use_intra_process_comms" value="$(var use_intra_process)"/>
         </composable_node>
 
         <!-- vehicle cmd gate -->
         <composable_node pkg="autoware_vehicle_cmd_gate" plugin="autoware::vehicle_cmd_gate::VehicleCmdGate" name="vehicle_cmd_gate">
-          <remap from="input/steering" to="/vehicle/status/steering_status"/>
+          <remap from="input/steering" to="/vehicle/status/steering_status/new"/>
           <remap from="input/operation_mode" to="/system/operation_mode/state"/>
-          <remap from="input/auto/control_cmd" to="/control/trajectory_follower/control_cmd"/>
+          <remap from="input/auto/control_cmd" to="/control/trajectory_follower/control_cmd/new"/>
           <remap from="input/auto/turn_indicators_cmd" to="/planning/turn_indicators_cmd"/>
           <remap from="input/auto/hazard_lights_cmd" to="/planning/hazard_lights_cmd"/>
-          <remap from="input/auto/gear_cmd" to="/control/shift_decider/gear_cmd"/>
+          <remap from="input/auto/gear_cmd" to="/control/shift_decider/gear_cmd/new"/>
           <remap from="input/external/control_cmd" to="/external/selected/control_cmd"/>
           <remap from="input/external/turn_indicators_cmd" to="/external/selected/turn_indicators_cmd"/>
           <remap from="input/external/hazard_lights_cmd" to="/external/selected/hazard_lights_cmd"/>
@@ -108,8 +108,8 @@
           <remap from="input/kinematics" to="/localization/kinematic_state"/>
           <remap from="input/acceleration" to="/localization/acceleration"/>
           <remap from="output/vehicle_cmd_emergency" to="/control/command/emergency_cmd"/>
-          <remap from="output/control_cmd" to="/control/command/control_cmd"/>
-          <remap from="output/gear_cmd" to="/control/command/gear_cmd"/>
+          <remap from="output/control_cmd" to="/control/command/control_cmd/discarded"/>
+          <remap from="output/gear_cmd" to="/control/command/gear_cmd/new"/>
           <remap from="output/turn_indicators_cmd" to="/control/command/turn_indicators_cmd"/>
           <remap from="output/hazard_lights_cmd" to="/control/command/hazard_lights_cmd"/>
           <remap from="output/gate_mode" to="/control/current_gate_mode"/>
@@ -136,11 +136,11 @@
         >
           <!-- input -->
           <remap from="kinematics" to="/localization/kinematic_state"/>
-          <remap from="steering" to="/vehicle/status/steering_status"/>
+          <remap from="steering" to="/vehicle/status/steering_status/new"/>
           <remap from="trajectory" to="/planning/scenario_planning/trajectory"/>
-          <remap from="control_cmd" to="/control/command/control_cmd"/>
+          <remap from="control_cmd" to="/control/command/control_cmd/new"/>
           <remap from="trajectory_follower_control_cmd" to="/control/trajectory_follower/control_cmd"/>
-          <remap from="control_mode_report" to="/vehicle/status/control_mode"/>
+          <remap from="control_mode_report" to="/vehicle/status/control_mode/new"/>
           <remap from="gate_operation_mode" to="/control/vehicle_cmd_gate/operation_mode"/>
           <!-- output -->
           <remap from="is_autonomous_available" to="/control/is_autonomous_available"/>
@@ -190,7 +190,7 @@
     <load_composable_node target="/control/control_container" if="$(var enable_autonomous_emergency_braking)">
       <composable_node pkg="autoware_autonomous_emergency_braking" plugin="autoware::motion::control::autonomous_emergency_braking::AEB" name="autonomous_emergency_braking">
         <remap from="~/input/pointcloud" to="/perception/obstacle_segmentation/pointcloud"/>
-        <remap from="~/input/velocity" to="/vehicle/status/velocity_status"/>
+        <remap from="~/input/velocity" to="/vehicle/status/velocity_status/new"/>
         <remap from="~/input/imu" to="/sensing/imu/imu_data"/>
         <remap from="~/input/odometry" to="/localization/kinematic_state"/>
         <remap from="~/input/objects" to="/perception/obstacle_segmentation/objects"/>
