@@ -77,7 +77,7 @@ def launch_setup(context, *args, **kwargs):
         remappings=[
             ("~/input/reference_trajectory", "/planning/scenario_planning/trajectory"),
             ("~/input/current_odometry", "/localization/kinematic_state"),
-            ("~/input/current_steering", "/vehicle/status/steering_status"),
+            ("~/input/current_steering", "/vehicle/status/steering_status/new"),
             ("~/input/current_accel", "/localization/acceleration"),
             ("~/input/current_operation_mode", "/system/operation_mode/state"),
             ("~/output/predicted_trajectory", "lateral/predicted_trajectory"),
@@ -85,7 +85,7 @@ def launch_setup(context, *args, **kwargs):
             ("~/output/slope_angle", "longitudinal/slope_angle"),
             ("~/output/longitudinal_diagnostic", "longitudinal/diagnostic"),
             ("~/output/stop_reason", "longitudinal/stop_reason"),
-            ("~/output/control_cmd", "control_cmd"),
+            ("~/output/control_cmd", "/control/command/control_cmd/new"),
         ],
         parameters=[
             {
@@ -145,7 +145,7 @@ def launch_setup(context, *args, **kwargs):
         name="autonomous_emergency_braking",
         remappings=[
             ("~/input/pointcloud", "/perception/obstacle_segmentation/pointcloud"),
-            ("~/input/velocity", "/vehicle/status/velocity_status"),
+            ("~/input/velocity", "/vehicle/status/velocity_status/new"),
             ("~/input/imu", "/sensing/imu/imu_data"),
             ("~/input/odometry", "/localization/kinematic_state"),
             (
@@ -199,7 +199,7 @@ def launch_setup(context, *args, **kwargs):
         plugin="autoware::vehicle_cmd_gate::VehicleCmdGate",
         name="vehicle_cmd_gate",
         remappings=[
-            ("input/steering", "/vehicle/status/steering_status"),
+            ("input/steering", "/vehicle/status/steering_status/new"),
             ("input/operation_mode", "/system/operation_mode/state"),
             ("input/auto/control_cmd", "/control/trajectory_follower/control_cmd"),
             ("input/auto/turn_indicators_cmd", "/planning/turn_indicators_cmd"),
@@ -218,8 +218,8 @@ def launch_setup(context, *args, **kwargs):
             ("input/kinematics", "/localization/kinematic_state"),
             ("input/acceleration", "/localization/acceleration"),
             ("output/vehicle_cmd_emergency", "/control/command/emergency_cmd"),
-            ("output/control_cmd", "/control/command/control_cmd"),
-            ("output/gear_cmd", "/control/command/gear_cmd"),
+            ("output/control_cmd", "/control/command/control_cmd/discarded"),
+            ("output/gear_cmd", "/control/command/gear_cmd/new"),
             ("output/turn_indicators_cmd", "/control/command/turn_indicators_cmd"),
             ("output/hazard_lights_cmd", "/control/command/hazard_lights_cmd"),
             ("output/gate_mode", "/control/current_gate_mode"),
@@ -253,11 +253,11 @@ def launch_setup(context, *args, **kwargs):
         remappings=[
             # input
             ("kinematics", "/localization/kinematic_state"),
-            ("steering", "/vehicle/status/steering_status"),
+            ("steering", "/vehicle/status/steering_status/new"),
             ("trajectory", "/planning/scenario_planning/trajectory"),
-            ("control_cmd", "/control/command/control_cmd"),
+            ("control_cmd", "/control/command/control_cmd/new"),
             ("trajectory_follower_control_cmd", "/control/trajectory_follower/control_cmd"),
-            ("control_mode_report", "/vehicle/status/control_mode"),
+            ("control_mode_report", "/vehicle/status/control_mode/new"),
             ("gate_operation_mode", "/control/vehicle_cmd_gate/operation_mode"),
             # output
             ("is_autonomous_available", "/control/is_autonomous_available"),
