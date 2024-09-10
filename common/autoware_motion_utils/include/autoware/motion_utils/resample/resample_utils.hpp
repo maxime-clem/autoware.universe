@@ -15,8 +15,6 @@
 #ifndef AUTOWARE__MOTION_UTILS__RESAMPLE__RESAMPLE_UTILS_HPP_
 #define AUTOWARE__MOTION_UTILS__RESAMPLE__RESAMPLE_UTILS_HPP_
 
-#include "autoware/universe_utils/system/backtrace.hpp"
-
 #include <autoware/motion_utils/constants.hpp>
 #include <autoware/motion_utils/trajectory/trajectory.hpp>
 #include <autoware/universe_utils/geometry/geometry.hpp>
@@ -67,27 +65,23 @@ bool validate_arguments(const T & input_points, const std::vector<double> & resa
   // Check size of the arguments
   if (!validate_size(input_points)) {
     RCLCPP_DEBUG(get_logger(), "invalid argument: The number of input points is less than 2");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
   if (!validate_size(resampling_intervals)) {
     RCLCPP_DEBUG(
       get_logger(), "invalid argument: The number of resampling intervals is less than 2");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 
   // Check resampling range
   if (!validate_resampling_range(input_points, resampling_intervals)) {
     RCLCPP_DEBUG(get_logger(), "invalid argument: resampling interval is longer than input points");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 
   // Check duplication
   if (!validate_points_duplication(input_points)) {
     RCLCPP_DEBUG(get_logger(), "invalid argument: input points has some duplicated points");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 
@@ -100,7 +94,6 @@ bool validate_arguments(const T & input_points, const double resampling_interval
   // Check size of the arguments
   if (!validate_size(input_points)) {
     RCLCPP_DEBUG(get_logger(), "invalid argument: The number of input points is less than 2");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 
@@ -109,14 +102,12 @@ bool validate_arguments(const T & input_points, const double resampling_interval
     RCLCPP_DEBUG(
       get_logger(), "invalid argument: resampling interval is less than %f",
       autoware::motion_utils::overlap_threshold);
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 
   // Check duplication
   if (!validate_points_duplication(input_points)) {
     RCLCPP_DEBUG(get_logger(), "invalid argument: input points has some duplicated points");
-    autoware::universe_utils::print_backtrace();
     return false;
   }
 

@@ -18,7 +18,6 @@
 #include "autoware/universe_utils/geometry/geometry.hpp"
 #include "autoware/universe_utils/geometry/pose_deviation.hpp"
 #include "autoware/universe_utils/math/constants.hpp"
-#include "autoware/universe_utils/system/backtrace.hpp"
 
 #include <Eigen/Geometry>
 #include <rclcpp/logging.hpp>
@@ -51,7 +50,6 @@ template <class T>
 void validateNonEmpty(const T & points)
 {
   if (points.empty()) {
-    autoware::universe_utils::print_backtrace();
     throw std::invalid_argument("[autoware_motion_utils] validateNonEmpty(): Points is empty.");
   }
 }
@@ -87,7 +85,6 @@ void validateNonSharpAngle(
 
   constexpr double epsilon = 1e-3;
   if (std::cos(angle_threshold) < product / dist_1to2 / dist_3to2 + epsilon) {
-    autoware::universe_utils::print_backtrace();
     throw std::invalid_argument(
       "[autoware_motion_utils] validateNonSharpAngle(): Too sharp angle.");
   }
@@ -409,7 +406,6 @@ double calcLongitudinalOffsetToSegment(
       "[autoware_motion_utils] " + std::string(__func__) +
       ": Failed to calculate longitudinal offset because the given segment index is out of the "
       "points size.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::out_of_range(error_message);
     }
@@ -437,7 +433,6 @@ double calcLongitudinalOffsetToSegment(
     const std::string error_message(
       "[autoware_motion_utils] " + std::string(__func__) +
       ": Longitudinal offset calculation is not supported for the same points.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::runtime_error(error_message);
     }
@@ -599,7 +594,6 @@ double calcLateralOffset(
     const std::string error_message(
       "[autoware_motion_utils] " + std::string(__func__) +
       ": Lateral offset calculation is not supported for the same points.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::runtime_error(error_message);
     }
@@ -672,7 +666,6 @@ double calcLateralOffset(
     const std::string error_message(
       "[autoware_motion_utils] " + std::string(__func__) +
       ": Lateral offset calculation is not supported for the same points.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::runtime_error(error_message);
     }
@@ -1095,7 +1088,6 @@ std::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
       "[autoware_motion_utils] " + std::string(__func__) +
       " error: The given source index is out of the points size. Failed to calculate longitudinal "
       "offset.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::out_of_range(error_message);
     }
@@ -1226,7 +1218,6 @@ std::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
       "[autoware_motion_utils] " + std::string(__func__) +
       " error: The given source index is out of the points size. Failed to calculate longitudinal "
       "offset.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::out_of_range(error_message);
     }
@@ -2436,7 +2427,6 @@ double calcYawDeviation(
     const std::string error_message(
       "[autoware_motion_utils] " + std::string(__func__) +
       " Given points size is less than 2. Failed to calculate yaw deviation.");
-    autoware::universe_utils::print_backtrace();
     if (throw_exception) {
       throw std::runtime_error(error_message);
     }

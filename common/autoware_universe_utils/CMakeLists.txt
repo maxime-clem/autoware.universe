@@ -24,7 +24,6 @@ ament_auto_add_library(autoware_universe_utils SHARED
   src/ros/msg_operation.cpp
   src/ros/marker_helper.cpp
   src/ros/logger_level_configure.cpp
-  src/system/backtrace.cpp
   src/system/time_keeper.cpp
   src/geometry/ear_clipping.cpp
 )
