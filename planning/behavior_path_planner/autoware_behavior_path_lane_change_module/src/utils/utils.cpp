@@ -30,12 +30,14 @@
 #include <autoware/motion_utils/trajectory/trajectory.hpp>
 #include <autoware/universe_utils/geometry/boost_geometry.hpp>
 #include <autoware/universe_utils/geometry/boost_polygon_utils.hpp>
+#include <autoware/universe_utils/geometry/geometry.hpp>
 #include <autoware_vehicle_info_utils/vehicle_info.hpp>
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/detail/pose__struct.hpp>
+#include <tier4_planning_msgs/msg/detail/path_point_with_lane_id__struct.hpp>
 
 #include <boost/geometry/algorithms/detail/disjoint/interface.hpp>
 
@@ -54,6 +56,8 @@
 #include <optional>
 #include <string>
 #include <vector>
+
+#include <autoware_bezier_sampler/bezier_sampling.hpp>
 
 namespace autoware::behavior_path_planner::utils::lane_change
 {
@@ -401,6 +405,25 @@ std::optional<LaneChangePath> constructCandidatePath(
     }
   }
 
+  const auto from_idx = motion_utils::findNearestIndex(shifted_path.path.points, shift_line.start);
+  const auto to_idx = motion_utils::findNearestIndex(shifted_path.path.points, shift_line.end);
+  autoware::sampler_common::State initial;
+  autoware::sampler_common::State final;
+  initial.curvature = final.curvature = 0.0;
+  initial.pose.x() = shift_line.start.position.x;
+  initial.pose.y() = shift_line.start.position.y;
+  initial.heading = tf2::getYaw(shift_line.start.orientation);
+  final.pose.x() = shift_line.end.position.x;
+  final.pose.y() = shift_line.end.position.y;
+  final.heading = tf2::getYaw(shift_line.end.orientation);
+  const auto bezier_path = bezier_sampler::sample(initial, final, 0.3, 1.24, 0.0);
+  const auto bezier_points = bezier_path.cartesianWithHeading(*to_idx - *from_idx);
+  for(auto i = *from_idx; i < *to_idx; ++i) {
+    auto & p = shifted_path.path.points[i];
+    p.point.pose.position.x = bezier_points[i].x();
+    p.point.pose.position.y = bezier_points[i].y();
+    p.point.pose.orientation = universe_utils::createQuaternionFromRPY(0.0, 0.0, bezier_points[i].z());
+  }
   candidate_path.path = utils::combinePath(prepare_segment, shifted_path.path);
   candidate_path.shifted_path = shifted_path;
 
